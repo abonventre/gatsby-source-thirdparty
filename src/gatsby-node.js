@@ -16,18 +16,21 @@ exports.sourceNodes = async ({ boundActionCreators, createNodeId  }) => {
 
   // Process data into nodes.
   data.forEach(datum => {
+    console.log(datum);
     let node = {
-      id: createNodeId('datum.test'),
+      id: createNodeId(datum.test),
       parent: null,
       children: [],
       mediaType: 'application/json',
       test: datum.test,
-      contentDigest: crypto
+      internal: {
+        type: `thirdparty`,
+        contentDigest: crypto
         .createHash(`md5`)
         .update(JSON.stringify(datum))
         .digest(`hex`)
       }
-    }
+    };
     createNode(node);
   });
 

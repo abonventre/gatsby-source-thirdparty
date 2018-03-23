@@ -1,4 +1,4 @@
-# Dependency directory
-node_modules
-
-.DS_Store
+/node_modules
+/__tests__
+/*.js
+!index.js
