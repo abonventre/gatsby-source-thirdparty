@@ -1,5 +1,5 @@
 # gatsby-source-thirdparty
 
-A plugin for pulling in third party api data.
+A gatsby plugin for pulling in third party api data.
 
-## WIP 
+## WIP
