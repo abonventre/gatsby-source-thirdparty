@@ -1,3 +1,6 @@
+const crypto = require(`crypto`);
+const stringify = require(`json-stringify-safe`);
+
 exports.sourceNodes = async ({ boundActionCreators, createNodeId  }) => {
   const { createNode } = boundActionCreators;
   // Create nodes here, generally by downloading data
@@ -17,7 +20,13 @@ exports.sourceNodes = async ({ boundActionCreators, createNodeId  }) => {
       id: createNodeId('datum.test'),
       parent: null,
       children: [],
-      test: datum.test
+      mediaType: 'application/json',
+      test: datum.test,
+      contentDigest: crypto
+        .createHash(`md5`)
+        .update(JSON.stringify(datum))
+        .digest(`hex`)
+      }
     }
     createNode(node);
   });
