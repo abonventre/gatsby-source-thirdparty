@@ -1,6 +1,6 @@
 {
   "name": "gatsby-source-thirdparty",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Gatsby plugin to handle any third party api data intake.",
   "main": "index.js",
   "scripts": {
