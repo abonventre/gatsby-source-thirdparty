@@ -14,7 +14,7 @@ exports.sourceNodes = async ({ boundActionCreators, createNodeId  }) => {
   // Process data into nodes.
   data.forEach(datum => {
     let node = {
-      id = createNodeId('datum.test'),
+      id: createNodeId('datum.test'),
       parent: null,
       children: [],
       test: datum.test
