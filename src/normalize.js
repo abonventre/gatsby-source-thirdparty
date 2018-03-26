@@ -9,14 +9,14 @@ const digest = str =>
     .update(str)
     .digest(`hex`)
 
-const conflictFieldPrefix = `thirdParty__`
+const conflictFieldPrefix = `thirdParty_`
 const restrictedNodeFields = [`id`, `children`, `parent`, `fields`, `internal`]
 
 exports.createNodesFromEntities = ({entities, createNode}) => {
   entities.forEach(e => {
     // console.log(`e: ${JSON.stringify(e)}`);
     let { __type, ...entity } = e
-    console.log(`entity: `, entity);
+    // console.log(`entity: `, entity);
     let node = {
       ...entity,
       parent: null,
@@ -78,9 +78,9 @@ exports.standardizeKeys = entities =>
 exports.createGatsbyIds = (createNodeId, idField, entities) =>
   entities.map(e => {
     console.log(`Create Id's`);
-    if(e.id) {
-      e._id = e.id
-    }
+    // if(e.id) {
+    //   e._id = e.id
+    // }
     e.id = createNodeId(`${nanoid()}`)
     return e
 })

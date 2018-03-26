@@ -8,6 +8,12 @@
     "watch": "babel -w src --out-dir . --ignore __tests__",
     "prepublish": "cross-env NODE_ENV=production npm run build"
   },
+  "homepage": "https://github.com/abonventre/gatsby-source-thirdparty#readme",
+  "keywords": [
+    "gatsby",
+    "gatsby-plugin",
+    "gatsby-source-plugin"
+  ],
   "author": "Anthony Bonventre <abonventre@gmail.com>",
   "license": "MIT",
   "repository": {

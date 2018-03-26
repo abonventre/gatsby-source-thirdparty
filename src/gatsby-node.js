@@ -14,6 +14,7 @@ exports.sourceNodes = async ({
   localSave = false,
   skipCreateNode = false,
   path,
+  auth = {},
   payloadKey,
   name
 }) => {
@@ -22,7 +23,7 @@ exports.sourceNodes = async ({
   let entityType = `${typePrefix}${name}`
   // console.log(`entityType: ${entityType}`);
 
-  let entities = await fetch({url, name, localSave, path, payloadKey})
+  let entities = await fetch({url, name, localSave, path, payloadKey, auth})
 
   if(entities && !Array.isArray(entities)) {
     entities = [entities]

@@ -1,13 +1,15 @@
 const axios = require(`axios`)
 const fs = require('fs')
 const stringify = require(`json-stringify-safe`)
+const httpExceptionHandler = require(`./http-exception-handler`)
 
 async function fetch({
   url,
   name,
   localSave,
   path,
-  payloadKey
+  payloadKey,
+  auth
 }) {
   console.log(url);
 
@@ -18,9 +20,12 @@ async function fetch({
       method: `get`,
       url: url,
     }
+    if(auth) {
+      options.auth = auth
+    }
     allRoutes = await axios(options)
   } catch (e) {
-    console.log(`error: `, e)
+    httpExceptionHandler(e)
   }
 
   if(allRoutes) {
