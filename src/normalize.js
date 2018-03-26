@@ -1,5 +1,7 @@
-const crypto = require(`crypto`);
-const stringify = require(`json-stringify-safe`);
+const crypto = require(`crypto`)
+const stringify = require(`json-stringify-safe`)
+const deepMapKeys = require(`deep-map-keys`)
+const nanoid = require(`nanoid`)
 
 const digest = str =>
   crypto
@@ -7,11 +9,14 @@ const digest = str =>
     .update(str)
     .digest(`hex`)
 
+const conflictFieldPrefix = `thirdParty__`
+const restrictedNodeFields = [`id`, `children`, `parent`, `fields`, `internal`]
+
 exports.createNodesFromEntities = ({entities, createNode}) => {
   entities.forEach(e => {
     // console.log(`e: ${JSON.stringify(e)}`);
     let { __type, ...entity } = e
-    // console.log(`entity: `, entity);
+    console.log(`entity: `, entity);
     let node = {
       ...entity,
       parent: null,
@@ -27,17 +32,62 @@ exports.createNodesFromEntities = ({entities, createNode}) => {
   })
 }
 
+/**
+ * Validate the GraphQL naming convetions & protect specific fields.
+ *
+ * @param {any} key
+ * @returns the valid name
+ */
+function getValidKey({ key, verbose = true }) {
+  let nkey = String(key)
+  const NAME_RX = /^[_a-zA-Z][_a-zA-Z0-9]*$/
+  let changed = false
+  // Replace invalid characters
+  if (!NAME_RX.test(nkey)) {
+    changed = true
+    nkey = nkey.replace(/-|__|:|\.|\s/g, `_`)
+  }
+  // Prefix if first character isn't a letter.
+  if (!NAME_RX.test(nkey.slice(0, 1))) {
+    changed = true
+    nkey = `${conflictFieldPrefix}${nkey}`
+  }
+  if (restrictedNodeFields.includes(nkey)) {
+    changed = true
+    nkey = `${conflictFieldPrefix}${nkey}`.replace(/-|__|:|\.|\s/g, `_`)
+  }
+  if (changed && verbose)
+    console.log(
+      `Object with key "${key}" breaks GraphQL naming convention. Renamed to "${nkey}"`
+    )
+
+  return nkey
+}
+
+exports.getValidKey = getValidKey
+
+// Standardize ids + make sure keys are valid.
+exports.standardizeKeys = entities =>
+  entities.map(e =>
+    deepMapKeys(
+      e,
+      key => (key === `ID` ? getValidKey({ key: `id` }) : getValidKey({ key }))
+    )
+)
 
 exports.createGatsbyIds = (createNodeId, idField, entities) =>
   entities.map(e => {
-    // console.log(`Create Id's`);
-    e.id = createNodeId(`${e.__type}-${e[idField].toString()}`)
+    console.log(`Create Id's`);
+    if(e.id) {
+      e._id = e.id
+    }
+    e.id = createNodeId(`${nanoid()}`)
     return e
 })
 
 exports.createEntityType = (entityType, entities) =>
   entities.map(e => {
-    // console.log(`Create Types`);
+    console.log(`Create Types`);
     e.__type = entityType
     return e
 })

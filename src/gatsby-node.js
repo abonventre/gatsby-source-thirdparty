@@ -12,6 +12,7 @@ exports.sourceNodes = async ({
   url,
   idField = `id`,
   localSave = false,
+  skipCreateNode = false,
   path,
   payloadKey,
   name
@@ -20,7 +21,7 @@ exports.sourceNodes = async ({
 
   let entityType = `${typePrefix}${name}`
   // console.log(`entityType: ${entityType}`);
-  
+
   let entities = await fetch({url, name, localSave, path, payloadKey})
 
   if(entities && !Array.isArray(entities)) {
@@ -30,11 +31,16 @@ exports.sourceNodes = async ({
   // console.log(`save: `, localSave);
   // console.log(`entities: `, entities.data);
 
+  if(skipCreateNode) {
+    return
+  }
+
+  entities = normalize.standardizeKeys(entities)
   entities = normalize.createEntityType(entityType, entities)
   entities = normalize.createGatsbyIds(createNodeId, idField, entities)
 
   normalize.createNodesFromEntities({entities, createNode})
 
   // We're done, return.
-  return;
+  return
 };
