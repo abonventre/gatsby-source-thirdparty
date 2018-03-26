@@ -7,4 +7,37 @@ const digest = str =>
     .update(str)
     .digest(`hex`)
 
-const typePrefix = `thirdParty`
+exports.createNodesFromEntities = ({entities, createNode}) => {
+  entities.forEach(e => {
+    // console.log(`e: ${JSON.stringify(e)}`);
+    let { __type, ...entity } = e
+    // console.log(`entity: `, entity);
+    let node = {
+      ...entity,
+      parent: null,
+      children: [],
+      mediaType: 'application/json',
+      internal: {
+        type: e.__type,
+        contentDigest: digest(JSON.stringify(e))
+      }
+    };
+    // console.log(`node: `, node);
+    createNode(node);
+  })
+}
+
+
+exports.createGatsbyIds = (createNodeId, idField, entities) =>
+  entities.map(e => {
+    // console.log(`Create Id's`);
+    e.id = createNodeId(`${e.__type}-${e[idField].toString()}`)
+    return e
+})
+
+exports.createEntityType = (entityType, entities) =>
+  entities.map(e => {
+    // console.log(`Create Types`);
+    e.__type = entityType
+    return e
+})

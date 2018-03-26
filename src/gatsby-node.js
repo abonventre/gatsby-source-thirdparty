@@ -1,38 +1,39 @@
-const crypto = require(`crypto`);
-const stringify = require(`json-stringify-safe`);
+const crypto = require(`crypto`)
+const stringify = require(`json-stringify-safe`)
+const fetch = require(`./fetch`)
+const normalize = require(`./normalize`)
 
-exports.sourceNodes = async ({ boundActionCreators, createNodeId  }) => {
+const typePrefix = `thirdParty__`
+
+exports.sourceNodes = async ({
+  boundActionCreators,
+  createNodeId
+}, {
+  url,
+  idField = `id`,
+  localSave = false,
+  path,
+  payloadKey,
+  name
+}) => {
   const { createNode } = boundActionCreators;
-  // Create nodes here, generally by downloading data
-  // from a remote API.
-  const data = [
-    {
-      test: 'test1'
-    },
-    {
-      test: 'test2'
-    }
-  ];
 
-  // Process data into nodes.
-  data.forEach(datum => {
-    console.log(datum);
-    let node = {
-      id: createNodeId(datum.test),
-      parent: null,
-      children: [],
-      mediaType: 'application/json',
-      test: datum.test,
-      internal: {
-        type: `thirdparty`,
-        contentDigest: crypto
-        .createHash(`md5`)
-        .update(JSON.stringify(datum))
-        .digest(`hex`)
-      }
-    };
-    createNode(node);
-  });
+  let entityType = `${typePrefix}${name}`
+  // console.log(`entityType: ${entityType}`);
+  
+  let entities = await fetch({url, name, localSave, path, payloadKey})
+
+  if(entities && !Array.isArray(entities)) {
+    entities = [entities]
+  }
+
+  // console.log(`save: `, localSave);
+  // console.log(`entities: `, entities.data);
+
+  entities = normalize.createEntityType(entityType, entities)
+  entities = normalize.createGatsbyIds(createNodeId, idField, entities)
+
+  normalize.createNodesFromEntities({entities, createNode})
 
   // We're done, return.
   return;
