@@ -24,10 +24,10 @@ async function fetch({
   }
 
   if(allRoutes) {
-    console.log(`allRoutes: `, allRoutes.data);
+    // console.log(`allRoutes: `, allRoutes.data);
     if(localSave) {
       fs.writeFileSync(`${path}${name}.json`, stringify(allRoutes.data, null, 2))
-      console.log(`saved`)
+      // console.log(`saved`)
     }
     if(payloadKey) {
       return allRoutes.data[payloadKey]
