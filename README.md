@@ -1,10 +1,10 @@
 # gatsby-source-thirdparty
 
-A gatsby plugin for pulling in third party api data.
+A gatsby source plugin for pulling in third party api data.
 
 ## Features
 
-* Gets data from configured api url
+* Pulls data from configured api url
 * Uses custom name to allow for multiple instances of plugin
 * Option to download the json data to a configurable path
 * Option to only download the json data, and skip inserting it into GraphQL
@@ -56,7 +56,6 @@ plugins: [
       // The data to be saved locally
       // Default is false
       skipCreateNode: true, // skip import to graphQL, only use if localSave is all you want
-
     }
   }
 ];
