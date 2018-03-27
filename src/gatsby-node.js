@@ -7,7 +7,8 @@ const typePrefix = `thirdParty__`
 
 exports.sourceNodes = async ({
   boundActionCreators,
-  createNodeId
+  createNodeId,
+  reporter
 }, {
   url,
   idField = `id`,
@@ -16,15 +17,22 @@ exports.sourceNodes = async ({
   path,
   auth = {},
   payloadKey,
-  name
+  name,
+  verboseOutput = false
 }) => {
   const { createNode } = boundActionCreators;
 
+  // If true, output some info as the plugin runs
+  let verbose = verboseOutput
+
+  // Create an entity type from prefix and name supplied by user
   let entityType = `${typePrefix}${name}`
   // console.log(`entityType: ${entityType}`);
 
-  let entities = await fetch({url, name, localSave, path, payloadKey, auth})
+  // Fetch the data
+  let entities = await fetch({url, name, localSave, path, payloadKey, auth, verbose, reporter})
 
+  // If entities is a single object, add to array to prevent issues with creating nodes
   if(entities && !Array.isArray(entities)) {
     entities = [entities]
   }
@@ -32,15 +40,22 @@ exports.sourceNodes = async ({
   // console.log(`save: `, localSave);
   // console.log(`entities: `, entities.data);
 
+  // Skip node creation if the goal is to only download the data to json files
   if(skipCreateNode) {
     return
   }
 
+  // Standardize and clean keys
   entities = normalize.standardizeKeys(entities)
-  entities = normalize.createEntityType(entityType, entities)
-  entities = normalize.createGatsbyIds(createNodeId, idField, entities)
 
-  normalize.createNodesFromEntities({entities, createNode})
+  // Add entity type to each entity
+  entities = normalize.createEntityType(entityType, entities)
+
+  // Create a unique id for gatsby
+  entities = normalize.createGatsbyIds(createNodeId, idField, entities, reporter)
+
+  // Generate the nodes
+  normalize.createNodesFromEntities({entities, createNode, reporter})
 
   // We're done, return.
   return

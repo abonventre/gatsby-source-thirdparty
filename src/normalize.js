@@ -2,17 +2,28 @@ const crypto = require(`crypto`)
 const stringify = require(`json-stringify-safe`)
 const deepMapKeys = require(`deep-map-keys`)
 const nanoid = require(`nanoid`)
+const chalk = require('chalk')
+const log = console.log
 
+/**
+ * Encrypts a String using md5 hash of hexadecimal digest.
+ *
+ * @param {any} str
+ */
 const digest = str =>
   crypto
     .createHash(`md5`)
     .update(str)
     .digest(`hex`)
 
+// Prefix to use if there is a conflict with key name
 const conflictFieldPrefix = `thirdParty_`
+
+// Keys that will conflic with graphql
 const restrictedNodeFields = [`id`, `children`, `parent`, `fields`, `internal`]
 
-exports.createNodesFromEntities = ({entities, createNode}) => {
+// Create nodes from entities
+exports.createNodesFromEntities = ({entities, createNode, reporter}) => {
   entities.forEach(e => {
     // console.log(`e: ${JSON.stringify(e)}`);
     let { __type, ...entity } = e
@@ -38,7 +49,7 @@ exports.createNodesFromEntities = ({entities, createNode}) => {
  * @param {any} key
  * @returns the valid name
  */
-function getValidKey({ key, verbose = true }) {
+function getValidKey({ key, verbose = false }) {
   let nkey = String(key)
   const NAME_RX = /^[_a-zA-Z][_a-zA-Z0-9]*$/
   let changed = false
@@ -57,9 +68,7 @@ function getValidKey({ key, verbose = true }) {
     nkey = `${conflictFieldPrefix}${nkey}`.replace(/-|__|:|\.|\s/g, `_`)
   }
   if (changed && verbose)
-    console.log(
-      `Object with key "${key}" breaks GraphQL naming convention. Renamed to "${nkey}"`
-    )
+    log(chalk`{bgCyan ThirdParty} Object with key "${key}" breaks GraphQL naming convention. Renamed to "${nkey}"`)
 
   return nkey
 }
@@ -75,19 +84,17 @@ exports.standardizeKeys = entities =>
     )
 )
 
-exports.createGatsbyIds = (createNodeId, idField, entities) =>
+
+// Generate a unique id for each entity
+exports.createGatsbyIds = (createNodeId, idField, entities, reporter) =>
   entities.map(e => {
-    console.log(`Create Id's`);
-    // if(e.id) {
-    //   e._id = e.id
-    // }
     e.id = createNodeId(`${nanoid()}`)
     return e
 })
 
+// Add entity type to each entity
 exports.createEntityType = (entityType, entities) =>
   entities.map(e => {
-    console.log(`Create Types`);
     e.__type = entityType
     return e
 })

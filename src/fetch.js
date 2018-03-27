@@ -2,6 +2,8 @@ const axios = require(`axios`)
 const fs = require('fs')
 const stringify = require(`json-stringify-safe`)
 const httpExceptionHandler = require(`./http-exception-handler`)
+const chalk = require('chalk')
+const log = console.log
 
 async function fetch({
   url,
@@ -9,12 +11,14 @@ async function fetch({
   localSave,
   path,
   payloadKey,
-  auth
+  auth,
+  verbose,
+  reporter
 }) {
-  console.log(url);
 
   let allRoutes
 
+  // Attempt to download the data from api
   try {
     let options = {
       method: `get`,
@@ -25,15 +29,26 @@ async function fetch({
     }
     allRoutes = await axios(options)
   } catch (e) {
-    httpExceptionHandler(e)
+    httpExceptionHandler(e, reporter)
   }
 
   if(allRoutes) {
     // console.log(`allRoutes: `, allRoutes.data);
+
+    // Create a local save of the json data in the user selected path
     if(localSave) {
-      fs.writeFileSync(`${path}${name}.json`, stringify(allRoutes.data, null, 2))
-      // console.log(`saved`)
+      try {
+        fs.writeFileSync(`${path}${name}.json`, stringify(allRoutes.data, null, 2))
+      } catch(err) {
+        reporter.panic(`Plugin ThirdParty could not save the file.  Please make sure the folder structure is already in place.`, err)
+      }
+
+      if(verbose) {
+        log(chalk`{bgCyan ThirdParty} ${name}.json was saved locally to ${path}`)
+      }
     }
+
+    // Return just the intended data
     if(payloadKey) {
       return allRoutes.data[payloadKey]
     }
