@@ -1,4 +1,4 @@
-const crypto = require(`npm:crypto`)
+const crypto = require(`crypto`)
 const stringify = require(`json-stringify-safe`)
 const deepMapKeys = require(`deep-map-keys`)
 const nanoid = require(`nanoid`)
