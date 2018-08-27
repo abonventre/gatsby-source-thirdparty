@@ -28,7 +28,7 @@ var digest = function digest(str) {
 var conflictFieldPrefix = 'thirdParty_';
 
 // Keys that will conflic with graphql
-var restrictedNodeFields = ['id', 'children', 'parent', 'fields', 'internal'];
+var restrictedNodeFields = ['id', 'children', 'parent', 'fields', 'internal', 'link'];
 
 // Create nodes from entities
 exports.createNodesFromEntities = function (_ref) {
