@@ -1,5 +1,6 @@
 const axios = require(`axios`)
 const fs = require('fs')
+const get = require('lodash/get');
 const stringify = require(`json-stringify-safe`)
 const httpExceptionHandler = require(`./http-exception-handler`)
 const chalk = require('chalk')
@@ -50,7 +51,7 @@ async function fetch({
 
     // Return just the intended data
     if(payloadKey) {
-      return allRoutes.data[payloadKey]
+      return get(allRoutes.data, `${payloadKey}`)
     }
     return allRoutes.data
   }

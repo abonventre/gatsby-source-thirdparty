@@ -34,6 +34,7 @@
     "crypto": "^1.0.1",
     "deep-map-keys": "^1.2.0",
     "json-stringify-safe": "^5.0.1",
+    "lodash": "^4.17.10",
     "nanoid": "^1.0.2"
   }
 }

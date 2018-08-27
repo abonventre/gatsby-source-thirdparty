@@ -20,7 +20,7 @@ const digest = str =>
 const conflictFieldPrefix = `thirdParty_`
 
 // Keys that will conflic with graphql
-const restrictedNodeFields = [`id`, `children`, `parent`, `fields`, `internal`]
+const restrictedNodeFields = [`id`, `children`, `parent`, `fields`, `internal`, `link`]
 
 // Create nodes from entities
 exports.createNodesFromEntities = ({entities, createNode, reporter}) => {
