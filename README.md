@@ -46,7 +46,7 @@ plugins: [
 
       //  Required folder path where the data should be saved if using localSave option
       //  This folder must already exist
-      path: `${__dirname}/src/data/auth/`
+      path: `${__dirname}/src/data/auth/`,
 
       // Optionally include some output when building
       // Default is false
